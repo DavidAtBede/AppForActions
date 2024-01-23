@@ -23,7 +23,6 @@ jobs:
 
       - name: Build
         run: dotnet build --no-restore
-
-    # As a placeholder for future test implementation
-    # - name: Test
-    #   run: dotnet test --no-restore --verbosity normal
+    
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
