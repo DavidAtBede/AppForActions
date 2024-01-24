@@ -40,3 +40,4 @@ jobs:
             name: 'NUnit Test Results'
             path: '**/test_results.trx'
             reporter: 'dotnet-trx'
+            github_token: ${{ secrets.GITHUB_TOKEN }}
