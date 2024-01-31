@@ -31,16 +31,15 @@ jobs:
       - name: Test
         run: dotnet test --no-restore --verbosity normal --logger "trx;LogFileName=test_results.trx"
 
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v4
-        with:
-            name: test-results
-            path: '**/test_results.trx'
+      - name: Pack
+        run: dotnet pack --no-build --output nupkgs
 
-      - name: Publish Test Results
-        uses: dorny/test-reporter@v1
-        if: always() # even if the previous step failed
-        with:
-            name: 'NUnit Test Results'
-            path: '**/test_results.trx'
-            reporter: 'dotnet-trx'
+      # get a ssh session at this point in the workflow
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
+      - name: Publish
+        run: dotnet nuget push AppForActions/**/*.nupkg -k ${{secrets.NEXUS_API_KEY}} -s http://repos.ad.bedegaming.com:8081/repository/nuget-components/
+
+
+        
