@@ -1,45 +1,32 @@
-name: .NET Build
-
 on:
-  push:
-    branches: [develop]
-  pull_request:
-    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+      print_tags:
+        description: 'True to print to STDOUT'
+        required: true
+        type: boolean
+      tags:
+        description: 'Test scenario tags'
+        required: true
+        type: string
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
 
-permissions:
-  contents: read
-  checks: write
-  
 jobs:
-  build:
+  print-tag:
     runs-on: ubuntu-latest
-
+    if:  ${{ inputs.print_tags }} 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: "8.0" # Specify the .NET version
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore
-
-      - name: Test
-        run: dotnet test --no-restore --verbosity normal --logger "trx;LogFileName=test_results.trx"
-
-      # get a ssh session at this point in the workflow
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-
-      - name: Pack
-        run: dotnet pack --no-build --output nupkgs
-
-      - name: Publish
-        run: dotnet nuget push AppForActions/**/*.nupkg -k ${{secrets.NEXUS_API_KEY}} -s http://repos.ad.bedegaming.com:8081/repository/nuget-components/
-
-
-        
+      - name: Print the input tag to STDOUT
+        run: echo  The tags are ${{ inputs.tags }} 
