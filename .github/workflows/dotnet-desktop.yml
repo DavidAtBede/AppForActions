@@ -1,32 +1,37 @@
+name: Create a bubble in QA03
+
 on:
   workflow_dispatch:
     inputs:
-      logLevel:
-        description: 'Log level'
+      app_name:
+        description: 'Name of the main app you care about, eg: Bede.Profiles'
+        type: string
         required: true
-        default: 'warning'
-        type: choice
-        options:
-          - info
-          - warning
-          - debug
-      print_tags:
-        description: 'True to print to STDOUT'
-        required: true
-        type: boolean
-      tags:
-        description: 'Test scenario tags'
+      app_version:
+        description: 'the version of the app to run'
         required: true
         type: string
-      environment:
-        description: 'Environment to run tests against'
-        type: environment
-        required: true
+        default: 'stable'
+
+env:  # we declare the same set of variables as CF (maybe we can do better, but for now, this is it.)
+  SOURCE_CONTEXT: en1bdeqa03aks
+  TARGET_CONTEXT: en1bdedv03aks
+  AZURE_STORAGE_ACCOUNT: en1bdedv02sto00
+  #AZURE_STORAGE_KEY: xxxxxxxxxx
+  AZURE_FILE_SHARE_URL: https://en1bdedv02sto00.file.core.windows.net/bubble
+  ELASTIC_SEARCH_URL: http://en1bdedv02els00.dv02.bde.bedegaming.com:9200
+  AZURE_SUBSCRIPTION_ID: d2856808-04c0-467a-902f-fd28eb6de3b5
+
+  # ACR_USERNAME:${{secrets.codefresh-secrets.acr-service-principle-user}}
+  # ACR_PASSWORD: ${{secrets.codefresh-secrets.acr-service-principle-password}}
 
 jobs:
   print-tag:
     runs-on: ubuntu-latest
-    if:  ${{ inputs.print_tags }} 
     steps:
-      - name: Print the input tag to STDOUT
-        run: echo  The tags are ${{ inputs.tags }} 
+      - name: create app env variable (to circumvent gha variable naming rules)
+        run: declare -x "${{inputs.app_name}}=${{inputs.app_version}}"
+
+      - name: Print the env
+        run: env
+
