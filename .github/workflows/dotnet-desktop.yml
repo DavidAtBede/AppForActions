@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: create app env variable (to circumvent gha variable naming rules)
-        run: declare -x "${{inputs.app_name}}=${{inputs.app_version}}"
+        run: declare -x ${{inputs.app_name}}=${{inputs.app_version}}
 
       - name: Print the env
         run: env
